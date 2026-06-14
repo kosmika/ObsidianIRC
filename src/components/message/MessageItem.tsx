@@ -24,6 +24,9 @@ import useStore, { loadSavedMetadata } from "../../store";
 import type { MessageType, PrivateChat, User } from "../../types";
 import MessageBottomSheet from "../mobile/MessageBottomSheet";
 import { EnhancedLinkWrapper } from "../ui/LinkWrapper";
+import { BotInvocationChip } from "./BotInvocationChip";
+import { BotToolsMessagePill } from "./BotToolsMessagePill";
+import { BotToolsPlaceholderBody } from "./BotToolsPlaceholderBody";
 import type { CollapsibleMessageHandle } from "./CollapsibleMessage";
 import { InviteMessage } from "./InviteMessage";
 import {
@@ -740,6 +743,11 @@ export const MessageItem = memo((props: MessageItemProps) => {
           )}
 
           <div className="relative min-w-0">
+            {isBot && (
+              <BotInvocationChip
+                tagValue={message.tags?.["+draft/invoked-by"]}
+              />
+            )}
             {message.replyMessage && (
               <MessageReply
                 replyMessage={message.replyMessage}
@@ -767,16 +775,35 @@ export const MessageItem = memo((props: MessageItemProps) => {
                   onOpenProfile={onOpenProfile}
                 />
               ) : (
-                // Unknown type (needs probe) or multi-URL: show text body
+                // The workflow pill is absolutely positioned in the
+                // avatar gutter to the LEFT of the body, so the body
+                // stays at its natural alignment and isn't pushed
+                // sideways by the pill's width.
                 <div
-                  className="overflow-hidden"
+                  className="relative"
                   style={{
                     whiteSpace: "pre-wrap",
                     overflowWrap: "break-word",
                     wordBreak: "break-word",
                   }}
                 >
-                  {collapsibleContent}
+                  <span
+                    className="absolute top-[5px] z-10"
+                    style={{ right: "100%", marginRight: "4px" }}
+                  >
+                    <BotToolsMessagePill
+                      serverId={message.serverId}
+                      tags={message.tags}
+                    />
+                  </span>
+                  {message.botToolsPending && message.botToolsWorkflowId ? (
+                    <BotToolsPlaceholderBody
+                      serverId={message.serverId}
+                      workflowId={message.botToolsWorkflowId}
+                    />
+                  ) : (
+                    collapsibleContent
+                  )}
                 </div>
               )}
             </EnhancedLinkWrapper>

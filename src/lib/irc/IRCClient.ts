@@ -115,6 +115,7 @@ export interface EventMap {
     batchId: string;
     type: string;
     parameters?: string[];
+    sender?: string;
   };
   BATCH_END: BaseIRCEvent & { batchId: string };
   MULTILINE_MESSAGE: BaseMessageEvent & {
@@ -609,6 +610,7 @@ export class IRCClient implements IRCClientContext {
     "sasl",
     "cap-notify",
     "draft/channel-rename",
+    "draft/bot-tools",
     "setname",
     "account-notify",
     "account-tag",
@@ -635,6 +637,8 @@ export class IRCClient implements IRCClientContext {
     "labeled-response",
     "draft/read-marker",
     "obsidianirc/cmdslist",
+    "draft/bot-cmds",
+    "obby.world/channel-bots",
     // obbyircd vendor cap. Without REQ'ing it the server won't emit
     // the INVITELINK protocol even if it advertises support in CAP LS.
     "obby.world/invitation",
